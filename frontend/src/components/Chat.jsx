@@ -99,52 +99,52 @@ const Chat = () => {
   ]
 
   return (
-    <div className="chat-container mx-auto h-[600px] flex flex-col">
+    <div className="bg-white rounded-lg shadow-lg overflow-hidden">
       {/* Chat Header */}
-      <div className="flex-shrink-0 p-4 border-b border-gray-200 bg-gradient-to-r from-primary-50 to-accent-50">
+      <div className="bg-red-600 text-white p-4">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="font-semibold text-gray-800">RAG Assistant</h3>
-            <p className="text-sm text-gray-600">HSC Bangla Literature Expert</p>
+            <h3 className="text-lg font-semibold">HSC বাংলা সাহিত্য AI সহায়ক</h3>
+            <p className="text-red-100 text-sm">HSC Bangla Literature AI Assistant</p>
           </div>
           <div className="flex items-center space-x-2">
             <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
-            <span className="text-sm text-green-600">Online</span>
+            <span className="text-sm text-green-200">অনলাইন</span>
           </div>
         </div>
       </div>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="h-[600px] overflow-y-auto p-4 space-y-4 bg-gray-50">
         {messages.map((message, index) => (
           <div key={index} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
             <div className="max-w-[80%]">
               <div 
                 className={`
-                  p-4 rounded-2xl shadow-sm
+                  p-4 rounded-lg shadow-sm
                   ${message.type === 'user' 
-                    ? 'message-user' 
+                    ? 'bg-red-600 text-white' 
                     : message.isError 
                       ? 'bg-red-50 text-red-800 border border-red-200' 
-                      : 'message-assistant'
+                      : 'bg-white text-gray-800 border border-gray-200'
                   }
                 `}
               >
-                <div className="whitespace-pre-wrap break-words font-bengali">
+                <div className="whitespace-pre-wrap break-words">
                   {message.content}
                 </div>
                 
                 {/* Show metadata for assistant messages */}
                 {message.type === 'assistant' && message.metadata && !message.isError && (
-                  <div className="mt-3 pt-3 border-t border-gray-300/50">
+                  <div className="mt-3 pt-3 border-t border-gray-200">
                     <div className="text-xs text-gray-500 space-y-1">
                       <div className="flex items-center justify-between">
-                        <span>Sources: {message.metadata.num_sources}</span>
+                        <span>সূত্র: {message.metadata.num_sources}টি</span>
                         {message.confidence_score && (
-                          <span>Confidence: {(message.confidence_score * 100).toFixed(0)}%</span>
+                          <span>নির্ভরযোগ্যতা: {(message.confidence_score * 100).toFixed(0)}%</span>
                         )}
                       </div>
-                      <div>Language: {message.metadata.detected_language === 'bn' ? 'Bengali' : 'English'}</div>
+                      <div>ভাষা: {message.metadata.detected_language === 'bn' ? 'বাংলা' : 'ইংরেজি'}</div>
                     </div>
                   </div>
                 )}
@@ -160,12 +160,14 @@ const Chat = () => {
         {isLoading && (
           <div className="flex justify-start">
             <div className="max-w-[80%]">
-              <div className="bg-gray-100 rounded-2xl px-4 py-3">
-                <div className="typing-indicator">
-                  <div className="typing-dot" style={{'--delay': 0}}></div>
-                  <div className="typing-dot" style={{'--delay': 1}}></div>
-                  <div className="typing-dot" style={{'--delay': 2}}></div>
-                  <span className="ml-2 text-gray-500 text-sm">Thinking...</span>
+              <div className="bg-white border border-gray-200 rounded-lg px-4 py-3">
+                <div className="flex items-center space-x-2">
+                  <div className="flex space-x-1">
+                    <div className="w-2 h-2 bg-red-600 rounded-full animate-bounce" style={{animationDelay: '0ms'}}></div>
+                    <div className="w-2 h-2 bg-red-600 rounded-full animate-bounce" style={{animationDelay: '150ms'}}></div>
+                    <div className="w-2 h-2 bg-red-600 rounded-full animate-bounce" style={{animationDelay: '300ms'}}></div>
+                  </div>
+                  <span className="text-gray-500 text-sm">চিন্তা করছি...</span>
                 </div>
               </div>
             </div>
@@ -177,14 +179,19 @@ const Chat = () => {
 
       {/* Sample Questions */}
       {messages.length === 1 && (
-        <div className="flex-shrink-0 p-4 bg-gray-50 border-t border-gray-200">
-          <h4 className="text-sm font-medium text-gray-700 mb-3">নমুনা প্রশ্ন / Sample Questions:</h4>
+        <div className="p-4 bg-gray-100 border-t border-gray-200">
+          <h4 className="text-sm font-medium text-gray-700 mb-3 flex items-center">
+            <svg className="w-4 h-4 mr-2 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            নমুনা প্রশ্ন / Sample Questions
+          </h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             {sampleQuestions.map((question, index) => (
               <button
                 key={index}
                 onClick={() => setInput(question)}
-                className="text-left p-3 bg-white rounded-lg text-sm text-gray-600 hover:bg-primary-50 hover:text-primary-600 transition-colors border border-gray-200"
+                className="text-left p-3 bg-white rounded-lg text-sm text-gray-700 hover:bg-red-50 hover:text-red-700 hover:border-red-200 transition-colors border border-gray-200"
                 disabled={isLoading}
               >
                 {question}
@@ -195,28 +202,26 @@ const Chat = () => {
       )}
 
       {/* Input Area */}
-      <div className="flex-shrink-0 p-4 border-t border-gray-200 bg-white">
-        <form onSubmit={handleSubmit} className="flex space-x-2">
+      <div className="p-4 border-t border-gray-200 bg-white">
+        <form onSubmit={handleSubmit} className="flex space-x-3">
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="আপনার প্রশ্ন লিখুন / Type your question..."
-            className="flex-1 px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent font-bengali"
+            className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
             disabled={isLoading}
           />
           <button
             type="submit"
             disabled={!input.trim() || isLoading}
-            className="px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-full hover:from-primary-600 hover:to-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg"
+            className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm flex items-center"
           >
             {isLoading ? (
-              <div className="w-6 h-6">
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              </div>
+              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
             ) : (
               <svg 
-                className="w-6 h-6" 
+                className="w-5 h-5" 
                 fill="none" 
                 stroke="currentColor" 
                 viewBox="0 0 24 24"
@@ -232,8 +237,11 @@ const Chat = () => {
           </button>
         </form>
         
-        <div className="mt-2 text-xs text-gray-500 text-center">
-          Powered by Google Gemini • HSC Bangla Literature Dataset
+        <div className="mt-3 text-xs text-gray-500 text-center flex items-center justify-center space-x-2">
+          <span>Powered by</span>
+          <span className="text-red-600 font-medium">Google Gemini</span>
+          <span>•</span>
+          <span>HSC বাংলা সাহিত্য ডেটাসেট</span>
         </div>
       </div>
     </div>
