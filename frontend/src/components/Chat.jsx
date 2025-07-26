@@ -92,10 +92,10 @@ const Chat = () => {
   }
 
   const sampleQuestions = [
-    "অনুপমের ভাষায় সুপুরুষ কাকে বলা হয়েছে?",
-    "কাকে অনুপমের ভাগ্য দেবতা বলে উল্লেখ করা হয়েছে?",
-    "বিয়ের সময় কল্যাণীর প্রকৃত বয়স কত ছিল?",
-    "Who is described as a good man according to Anupam?"
+    "অনুপম কেমন চরিত্রের মানুষ?",
+    "কল্যাণীর বাবার নাম কী?",
+    "গল্পে যৌতুক নিয়ে কী ঘটেছিল?",
+    "Who is the author of Oporichita story?"
   ]
 
   return (
