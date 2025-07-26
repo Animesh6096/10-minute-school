@@ -1,8 +1,10 @@
 {
-  "name": "frontend",
+  "name": "multilingual-rag-bangla-literature",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
+  "description": "১০ মিনিট স্কুল - বাংলা সাহিত্য AI চ্যাট বট",
+  "keywords": ["bengali", "literature", "rag", "ai", "chatbot", "hsc"],
   "scripts": {
     "dev": "vite",
     "build": "vite build",

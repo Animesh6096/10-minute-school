@@ -5,37 +5,36 @@ import './App.css'
 
 function App() {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header />
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-5xl mx-auto">
-          {/* AI Chatbot Section Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-3">
-              HSC বাংলা সাহিত্য AI সহায়ক
-            </h1>
-            <p className="text-lg text-gray-600 mb-2">
-              HSC Bangla Literature AI Assistant
-            </p>
-            <p className="text-gray-500 max-w-3xl mx-auto">
-              বাংলা ও ইংরেজি উভয় ভাষায় HSC বাংলা সাহিত্য সম্পর্কে প্রশ্ন করুন। 
-              আমাদের AI সহায়ক আপনাকে তাৎক্ষণিক এবং নির্ভুল উত্তর প্রদান করবে।
-            </p>
-            <div className="mt-4 flex flex-wrap justify-center gap-2 text-sm">
-              <span className="px-3 py-1 bg-red-100 text-red-700 rounded-full">অপরিচিতা</span>
-              <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full">সাহিত্য বিশ্লেষণ</span>
-              <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full">দ্বিভাষিক সাপোর্ট</span>
-              <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full">Google Gemini AI</span>
-            </div>
-          </div>
-          
-          <div className="flex justify-center">
-            <div className="w-full max-w-4xl">
-              <Chat />
+      
+      {/* Hero Section with AI Chatbot Introduction */}
+      <main className="flex-1">
+        <div className="bg-gradient-to-r from-red-50 to-red-100 py-8">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center">
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                বাংলা সাহিত্য AI চ্যাট বট
+              </h1>
+              <p className="text-lg text-gray-600 mb-4">
+                HSC Bangla Literature AI Chat Bot
+              </p>
+              <div className="flex justify-center space-x-4 text-sm">
+                <span className="bg-red-100 text-red-800 px-3 py-1 rounded-full">অপরিচিতা</span>
+                <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full">সাহিত্য বিশ্লেষণ</span>
+                <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full">দ্বিভাষিক সাপোর্ট</span>
+                <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full">Google Gemini AI</span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+
+        {/* Chat Interface */}
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <Chat />
+        </div>
+      </main>
+
       <Footer />
     </div>
   )

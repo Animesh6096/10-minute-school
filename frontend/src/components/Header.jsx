@@ -1,4 +1,5 @@
 import React from 'react'
+import Logo from '../assets/logo.svg'
 
 const Header = () => {
   return (
@@ -8,13 +9,11 @@ const Header = () => {
           {/* Logo */}
           <div className="flex items-center space-x-3">
             <div className="flex items-center">
-              <div className="w-8 h-8 bg-red-600 rounded-md flex items-center justify-center text-white font-bold text-lg">
-                ১০
-              </div>
-              <div className="ml-2">
-                <div className="text-sm font-semibold text-gray-800">MINUTE</div>
-                <div className="text-xs text-gray-600">SCHOOL</div>
-              </div>
+              <img 
+                src={Logo} 
+                alt="10 Minute School Logo" 
+                className="h-10 w-auto"
+              />
             </div>
           </div>
 
@@ -23,7 +22,7 @@ const Header = () => {
             <div className="relative">
               <input
                 type="text"
-                placeholder="বিগান কোর্স, বিজ্ঞান ক্লাস দেখেতে শুরু করুন..."
+                placeholder="কিছু খোঁজ করুন..."
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
               />
               <div className="absolute right-3 top-2.5">
