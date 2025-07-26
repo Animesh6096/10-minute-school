@@ -1,4 +1,7 @@
 import os
+import json
+import re
+import unicodedata
 from typing import List, Dict, Optional
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -10,7 +13,6 @@ from langchain.prompts import PromptTemplate
 from langchain.schema import Document
 from dotenv import load_dotenv
 import logging
-import json
 from datetime import datetime
 
 # Load environment variables
@@ -19,6 +21,57 @@ load_dotenv()
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+class BengaliTextHelper:
+    """Enhanced helper class for proper Bengali text processing in story context"""
+    
+    @staticmethod
+    def normalize_bengali_text(text: str) -> str:
+        """Enhanced Bengali Unicode normalization for story content"""
+        # Normalize Unicode to NFC (Canonical Decomposition, followed by Canonical Composition)
+        text = unicodedata.normalize('NFC', text)
+        
+        # Fix broken Bengali conjuncts commonly found in PDFs
+        conjunct_fixes = {
+            # Fix র্ + অন্য অক্ষর (র্ followed by other characters)
+            'র্ি': 'রি',      # র্ি -> রি  
+            'র্ব্': 'র্ব',      # র্ব্ -> র্ব (remove extra halant)
+            'র্ন': 'রন',      # র্ন -> রন
+            'র্ত': 'রত',      # র্ত -> রত
+            'র্চ': 'রচ',      # র্চ -> রচ
+            'র্ক': 'রক',      # র্ক -> রক
+            'র্ম': 'রম',      # র্ম -> রম
+            'র্প': 'রপ',      # র্প -> রপ
+            'র্ল': 'রল',      # র্ল -> রল
+            'র্স': 'রস',      # র্স -> রস
+            'র্গ': 'রগ',      # র্গ -> রগ
+            'র্থ': 'রথ',      # র্থ -> রথ
+            'র্ভ': 'রভ',      # র্ভ -> রভ
+            'র্দ': 'রদ',      # র্দ -> রদ
+            'র্জ': 'রজ',      # র্জ -> রজ
+            
+            # Clean up zero-width characters
+            '\u200c': '',     # Remove ZWNJ (Zero Width Non-Joiner)
+            '\u200d': '',     # Remove ZWJ (Zero Width Joiner)
+            '\ufeff': '',     # Remove BOM (Byte Order Mark)
+        }
+        
+        # Apply fixes
+        for broken, fixed in conjunct_fixes.items():
+            text = text.replace(broken, fixed)
+        
+        # Clean up extra whitespace
+        text = re.sub(r'\s+', ' ', text)
+        text = text.strip()
+        
+        return text
+    
+    @staticmethod
+    def extract_character_info(context: str, character_name: str) -> str:
+        """Extract information about a specific character from story context"""
+        # This method can be enhanced to extract character-specific information
+        # For now, it returns the context as-is but could be made smarter
+        return context
 
 # Pydantic models
 class QueryRequest(BaseModel):
@@ -66,7 +119,7 @@ class RAGSystem:
     
     def __init__(self):
         self.google_api_key = os.getenv("GOOGLE_API_KEY")
-        self.persist_directory = os.getenv("CHROMADB_PATH", "./chroma_db")
+        self.persist_directory = os.getenv("CHROMADB_PATH", "./chroma_db_story_focused")  # Use story-focused vector store
         
         if not self.google_api_key:
             raise ValueError("GOOGLE_API_KEY not found in environment variables")
@@ -80,7 +133,9 @@ class RAGSystem:
         self.llm = ChatGoogleGenerativeAI(
             model="gemini-1.5-flash",
             google_api_key=self.google_api_key,
-            temperature=0.3
+            temperature=0.7,  # Increased for more creative reasoning
+            max_tokens=2048,  # Allow longer responses
+            top_p=0.9  # Better diversity in responses
         )
         
         # Load vector store
@@ -88,8 +143,8 @@ class RAGSystem:
         self.retriever = self.vectorstore.as_retriever(
             search_type="similarity_score_threshold",
             search_kwargs={
-                "k": 5,
-                "score_threshold": 0.6
+                "k": 8,  # Get more context for story content
+                "score_threshold": 0.3  # Adjusted for story content
             }
         )
         
@@ -125,16 +180,32 @@ class RAGSystem:
         return vectorstore
     
     def _create_prompt_template(self) -> PromptTemplate:
-        """Create a prompt template for the RAG system"""
-        template = """নিচে দেওয়া প্রসঙ্গ (context) এর উপর ভিত্তি করে প্রশ্নের উত্তর দাও।
+        """Create a prompt template focused on story comprehension and character analysis"""
+        template = """তুমি একজন বুদ্ধিমান বাংলা সাহিত্যের AI সহায়ক। তোমার কাজ হল রবীন্দ্রনাথ ঠাকুরের "অপরিচিতা" গল্প থেকে প্রশ্নের উত্তর দেওয়া।
 
-গুরুত্বপূর্ণ নির্দেশাবলী:
-1. শুধুমাত্র প্রদত্ত প্রসঙ্গের তথ্য ব্যবহার করো
-2. যদি প্রসঙ্গে উত্তর না থাকে, তাহলে "আমি নিশ্চিত নই" বা "তথ্যে এই উত্তর পাওয়া যায়নি" বলো
-3. উত্তর সংক্ষিপ্ত এবং সুনির্দিষ্ট হতে হবে
-4. প্রশ্নের ভাষায় উত্তর দাও (বাংলা প্রশ্নের বাংলা উত্তর, ইংরেজি প্রশ্নের ইংরেজি উত্তর)
+তোমার দক্ষতা:
+1. **গল্পের কাহিনী বিশ্লেষণ**: চরিত্র, ঘটনা, পরিস্থিতি নিয়ে আলোচনা
+2. **চরিত্র বিশ্লেষণ**: অনুপম, কল্যাণী, শম্ভুনাথ, মামা প্রমুখ চরিত্রের বৈশিষ্ট্য
+3. **সামাজিক প্রসঙ্গ**: যৌতুক প্রথা, বিবাহ, পারিবারিক সম্পর্ক ইত্যাদি
+4. **সংলাপ ও ঘটনা**: গল্পের মূল ঘটনা ও চরিত্রদের কথোপকথন
+5. **থিম ও বার্তা**: গল্পের মূল বার্তা ও সামাজিক সমালোচনা
 
-প্রসঙ্গ (Context):
+গুরুত্বপূর্ণ চরিত্র:
+- **অনুপম**: গল্পের নায়ক, দুর্বল ব্যক্তিত্বের অধিকারী
+- **কল্যাণী**: নায়িকা, শম্ভুনাথের মেয়ে
+- **শম্ভুনাথ সেন**: কল্যাণীর বাবা, আত্মসম্মানবোধ সম্পন্ন
+- **মামা**: অনুপমের অভিভাবক, যৌতুকলোভী
+- **বিনুদাদা**: অনুপমের বন্ধু
+- **হরিশ**: অনুপমের অন্য বন্ধু
+
+উত্তরের নির্দেশাবলী:
+✓ গল্পের প্রসঙ্গ ব্যবহার করো
+✓ চরিত্রের মনোভাব ও আচরণ বিশ্লেষণ করো  
+✓ স্পষ্ট ও সংক্রিপ্ত বাংলায় উত্তর দাও
+✓ প্রয়োজনে গল্পের উদাহরণ দাও
+✓ কোনো তথ্য না থাকলে "এই তথ্য গল্পে স্পষ্ট নয়" বলো
+
+প্রসঙ্গ (গল্প থেকে):
 {context}
 
 প্রশ্ন: {question}
@@ -156,8 +227,11 @@ class RAGSystem:
         return "en"
     
     async def query(self, query_text: str, language: str = "auto") -> QueryResponse:
-        """Process a query and return response"""
+        """Process a query and return response with intelligent reasoning"""
         try:
+            # Normalize Bengali text in query
+            query_text = BengaliTextHelper.normalize_bengali_text(query_text)
+            
             # Detect language if auto
             if language == "auto":
                 language = self.detect_language(query_text)
@@ -178,18 +252,31 @@ class RAGSystem:
             answer = result["result"]
             source_docs = result["source_documents"]
             
-            # Extract context chunks
-            context_chunks = [doc.page_content for doc in source_docs]
+            # Normalize Bengali text in answer and context chunks
+            answer = BengaliTextHelper.normalize_bengali_text(answer)
             
-            # Calculate simple confidence based on retrieval scores
-            confidence = min(1.0, len(source_docs) / 5.0) if source_docs else 0.0
+            # Extract and normalize context chunks
+            context_chunks = []
+            for doc in source_docs:
+                normalized_chunk = BengaliTextHelper.normalize_bengali_text(doc.page_content)
+                context_chunks.append(normalized_chunk)
+            
+            # Let Gemini do the reasoning instead of rigid MCQ extraction
+            # Only do basic cleanup
+            if answer.strip() == "" or len(answer.strip()) < 5:
+                answer = "তথ্যে এই উত্তর পাওয়া যায়নি।"
+            
+            # Calculate confidence based on answer quality and source relevance
+            confidence = 0.8 if len(source_docs) >= 3 and "তথ্যে এই উত্তর পাওয়া যায়নি" not in answer else 0.3
             
             # Prepare metadata
             metadata = {
                 "detected_language": language,
                 "num_sources": len(source_docs),
                 "timestamp": datetime.now().isoformat(),
-                "source_pages": [doc.metadata.get("page", "unknown") for doc in source_docs]
+                "source_pages": [doc.metadata.get("page", "unknown") for doc in source_docs],
+                "reasoning_mode": True,
+                "gemini_processing": True
             }
             
             # Add to conversation memory
