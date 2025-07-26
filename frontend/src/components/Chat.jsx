@@ -4,7 +4,7 @@ const Chat = () => {
   const [messages, setMessages] = useState([
     {
       type: 'assistant',
-      content: 'আস্সালামু আলাইকুম! আমি আপনার বাংলা ও ইংরেজি প্রশ্নের উত্তর দিতে পারি। HSC বাংলা সাহিত্য সম্পর্কে যেকোনো প্রশ্ন করুন।\n\nHello! I can answer your questions in both Bengali and English. Feel free to ask any questions about HSC Bangla literature.',
+      content: 'স্বাগতম! আমি আপনার বাংলা ও ইংরেজি প্রশ্নের উত্তর দিতে পারি। HSC বাংলা সাহিত্য সম্পর্কে যেকোনো প্রশ্ন করুন।\n\nWelcome! I can answer your questions in both Bengali and English. Feel free to ask any questions about HSC Bangla literature.',
       timestamp: new Date()
     }
   ])
@@ -236,13 +236,6 @@ const Chat = () => {
             )}
           </button>
         </form>
-        
-        <div className="mt-3 text-xs text-gray-500 text-center flex items-center justify-center space-x-2">
-          <span>Powered by</span>
-          <span className="text-red-600 font-medium">Google Gemini</span>
-          <span>•</span>
-          <span>HSC বাংলা সাহিত্য ডেটাসেট</span>
-        </div>
       </div>
     </div>
   )
