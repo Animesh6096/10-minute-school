@@ -41,6 +41,15 @@ if ! command -v python3 &> /dev/null; then
     exit 1
 fi
 
+# Check Python version
+PYTHON_VERSION=$(python3 -c "import sys; print('.'.join(map(str, sys.version_info[:2])))")
+print_status "Found Python $PYTHON_VERSION"
+
+if [[ "$PYTHON_VERSION" == "3.13" ]]; then
+    print_warning "Python 3.13 detected. Some packages may have compatibility issues."
+    print_warning "If you encounter errors, consider using Python 3.11 or 3.12"
+fi
+
 # Check Node.js
 if ! command -v node &> /dev/null; then
     print_error "Node.js is required but not installed"
@@ -86,7 +95,49 @@ print_success "Virtual environment activated"
 # Install/update dependencies
 print_status "Installing Python dependencies..."
 pip install --upgrade pip setuptools wheel -q
-pip install -r requirements.txt -q
+
+# Try installing numpy first with a specific version that works better with Python 3.13
+print_status "Installing compatible numpy version..."
+
+# First try to install a compatible numpy version
+if [[ "$PYTHON_VERSION" == "3.13" ]]; then
+    print_status "Installing numpy compatible with Python 3.13..."
+    pip install "numpy>=1.24.0,<1.26.0" -q
+else
+    pip install "numpy>=1.24.0" -q
+fi
+
+if [ $? -ne 0 ]; then
+    print_warning "Failed to install numpy with pip, trying conda or alternative approaches..."
+    
+    # Check if conda is available
+    if command -v conda &> /dev/null; then
+        print_status "Trying to install numpy with conda..."
+        conda install numpy -y
+    else
+        print_error "Failed to install numpy. Recommendations:"
+        echo ""
+        echo "Option 1: Use Python 3.11 or 3.12 instead:"
+        echo "  brew install python@3.11"
+        echo "  python3.11 -m venv venv"
+        echo ""
+        echo "Option 2: Install Xcode command line tools:"
+        echo "  xcode-select --install"
+        echo ""
+        echo "Option 3: Use conda instead of pip:"
+        echo "  conda create -n rag-env python=3.11"
+        echo "  conda activate rag-env"
+        echo ""
+        exit 1
+    fi
+fi
+
+print_status "Installing remaining dependencies..."
+
+# Create a temporary requirements file without numpy since we installed it separately
+grep -v "numpy" requirements.txt > temp_requirements.txt
+pip install -r temp_requirements.txt -q
+rm temp_requirements.txt
 
 if [ $? -eq 0 ]; then
     print_success "Python dependencies installed"

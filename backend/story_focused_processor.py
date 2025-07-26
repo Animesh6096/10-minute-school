@@ -100,12 +100,14 @@ class BengaliTextProcessor:
     @staticmethod
     def is_story_content(text: str) -> bool:
         """Determine if text is likely story content vs MCQ/metadata"""
-        # Story content indicators
+        # Story content indicators (including train scene indicators)
         story_indicators = [
             'গল্প', 'কাহিনী', 'চরিত্র', 'নায়ক', 'নায়িকা',
             'বিয়ে', 'বিবাহ', 'অনুপম', 'কল্যাণী', 'শম্ভুনাথ',
             'মামা', 'বাবা', 'মা', 'পিতা', 'মাতা',
-            'ঘটনা', 'পরিস্থিতি', 'সংলাপ', 'কথোপকথন'
+            'ঘটনা', 'পরিস্থিতি', 'সংলাপ', 'কথোপকথন',
+            'স্টেশন', 'গাড়ি', 'ট্রেন', 'রেল', 'প্ল্যাটফর্ম',
+            'যাত্রা', 'ভ্রমণ', 'স্টেশন-মাস্টার', 'টিকিট'
         ]
         
         # MCQ indicators (to exclude)
@@ -127,7 +129,11 @@ class BengaliTextProcessor:
             return False
             
         # If it has story indicators and is substantial text, it's likely story
-        return story_count > 0 or len(text.strip()) > 200
+        # OR if it contains transportation/journey elements (train scenes)
+        transportation_indicators = ['স্টেশন', 'গাড়ি', 'ট্রেন', 'রেল', 'প্ল্যাটফর্ম', 'যাত্রা']
+        has_transportation = any(indicator in text for indicator in transportation_indicators)
+        
+        return story_count > 0 or len(text.strip()) > 200 or has_transportation
     
     @staticmethod
     def clean_story_text(text: str) -> str:
