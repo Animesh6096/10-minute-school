@@ -56,39 +56,45 @@ Dowry system critique, social commentary, and literary significance
 
 ---
 
-## 🚀 **Quick Setup** 
-### *Get Started in 2 Minutes!*
+## 🚀 **One-Script Setup** 
+### *Complete Setup & Startup in One Command!*
 
 ### **Prerequisites**
 > 🔴 **Python 3.8+** • ⚫ **Node.js 16+** • 🔴 **Google API Key** ([Get Here](https://makersuite.google.com/app/apikey))
 
-### **⚡ One-Command Setup**
+### **⚡ Single Command Setup**
 
 <div align="center">
 
 ```bash
-# 1️⃣ Setup your environment
-cp .env.example .env
-# Add your Google API key to .env file
-
-# 2️⃣ Run the magic script
+# Run the complete setup and startup script
 ./start-rag.sh
 ```
 
-<img src="https://img.shields.io/badge/Setup_Time-2_Minutes-red?style=for-the-badge" alt="Setup Time"/>
+<img src="https://img.shields.io/badge/Setup_Time-3_Minutes-red?style=for-the-badge" alt="Setup Time"/>
 
 </div>
 
-**🎯 What happens automatically:**
-- ✅ Install all Python dependencies
-- ✅ Install all Node.js dependencies  
-- ✅ Start the backend server
-- ✅ Start the frontend development server
-- ✅ Open your browser to the application
+**🎯 What the script does automatically:**
+- ✅ Create Python virtual environment
+- ✅ Install all Python dependencies  
+- ✅ Install all Node.js dependencies
+- ✅ Setup environment configuration
+- ✅ Build vector database from documents
+- ✅ Start backend server (port 8000)
+- ✅ Start frontend server (port 5173)
+- ✅ Provide clear access instructions
+
+### **📝 Usage Instructions**
+1. **Get API Key**: Visit [Google AI Studio](https://makersuite.google.com/app/apikey)
+2. **Run Script**: Execute `./start-rag.sh` in the project root
+3. **Configure API**: The script will prompt you to add your API key
+4. **Access App**: Open http://localhost:5173 in your browser
+
+### **🛑 To Stop Servers**
+Simply press `Ctrl+C` in the terminal running the script.
 
 ---
-
-## 🏗️ **Project Architecture**
 
 ## 🏗️ **Project Architecture**
 
@@ -99,12 +105,15 @@ cp .env.example .env
 ├── 🐍 backend/                 # FastAPI Backend Engine
 │   ├── ⚡ main.py             # Core Application
 │   ├── 📦 requirements.txt    # Python Dependencies
-│   └── 📚 data/              # Story Database
+│   ├── 🔧 venv/              # Virtual Environment
+│   ├── 📚 documents/         # Story Documents
+│   └── 🗄️ chroma_db/         # Vector Database
 ├── ⚛️ frontend/               # React Frontend Interface
 │   ├── 🎨 src/               # UI Components
-│   └── 📄 package.json       # Node Dependencies
-├── 🚀 start-rag.sh           # Magic Setup Script
-└── 🔐 .env.example          # Environment Template
+│   ├── 📄 package.json       # Node Dependencies
+│   └── 📦 node_modules/      # Dependencies
+├── 🚀 start-rag.sh           # Complete Setup & Startup Script
+└── � README.md              # Documentation
 ```
 
 </div>
