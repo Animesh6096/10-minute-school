@@ -209,9 +209,23 @@ class RAGSystem:
 # Initialize FastAPI app
 app = FastAPI(
     title="Multilingual RAG System",
-    description="A RAG system for Bengali and English queries on HSC Bangla literature",
+    description="A RAG system that can handle queries in Bengali and English",
     version="1.0.0"
 )
+
+# Health check endpoint
+@app.get("/health")
+async def health_check():
+    return {
+        "status": "healthy", 
+        "message": "RAG system is running", 
+        "models": {
+            "llm": "Google Gemini 1.5-flash",
+            "embeddings": "Google text-embedding-004"
+        },
+        "vector_db": "ChromaDB",
+        "documents": "HSC Bangla Literature"
+    }
 
 # Add CORS middleware
 app.add_middleware(
