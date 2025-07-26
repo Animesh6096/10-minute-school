@@ -79,8 +79,8 @@ if [ ! -f ".env" ]; then
 fi
 
 # Check if PDF exists and vector database is built
-if [ ! -d "chroma_db" ]; then
-    print_warning "Vector database not found"
+if [ ! -d "chroma_db_story_focused" ]; then
+    print_warning "Story-focused vector database not found"
     
     # Check for PDF files
     found_pdf=false
@@ -97,21 +97,21 @@ if [ ! -d "chroma_db" ]; then
         read -p "Press Enter after adding PDF files to continue..."
     fi
     
-    # Run ingestion
-    print_status "Building vector database from documents..."
-    python ingest.py
+    # Run story-focused processing
+    print_status "Building story-focused vector database from documents..."
+    python story_focused_processor.py
     
     if [ $? -ne 0 ]; then
-        print_error "Failed to build vector database"
+        print_error "Failed to build story-focused vector database"
         exit 1
     fi
     
-    print_success "Vector database built successfully"
+    print_success "Story-focused vector database built successfully"
 fi
 
 # Start backend server
 print_status "Starting backend server..."
-python main.py &
+python -m uvicorn main:app --reload --port 8000 &
 BACKEND_PID=$!
 
 # Wait for backend to start
