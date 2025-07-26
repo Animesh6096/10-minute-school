@@ -1,4 +1,5 @@
 import React from 'react'
+import Logo from '../assets/logo.svg'
 
 const Footer = () => {
   return (
@@ -8,13 +9,11 @@ const Footer = () => {
           {/* Company Info */}
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-3 mb-4">
-              <div className="w-10 h-10 bg-red-600 rounded-md flex items-center justify-center text-white font-bold text-xl">
-                ১০
-              </div>
-              <div>
-                <div className="text-lg font-semibold">MINUTE SCHOOL</div>
-                <div className="text-sm text-gray-400">AI Powered Learning Platform</div>
-              </div>
+              <img 
+                src={Logo} 
+                alt="10 Minute School Logo" 
+                className="h-12 w-auto footer-logo"
+              />
             </div>
             <p className="text-gray-300 text-sm mb-4">
               বাংলাদেশের সবচেয়ে বড় অনলাইন শিক্ষা প্ল্যাটফর্ম। HSC, SSC, ভর্তি পরীক্ষা এবং স্কিল ডেভেলপমেন্টের জন্য সম্পূর্ণ সমাধান।

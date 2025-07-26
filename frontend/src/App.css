@@ -29,6 +29,11 @@ body {
   width: 6px;
 }
 
+/* Footer logo styling to make black parts white while keeping red */
+.footer-logo {
+  filter: brightness(0) invert(1);
+}
+
 ::-webkit-scrollbar-track {
   background: #f1f1f1;
 }
